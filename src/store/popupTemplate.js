@@ -1,7 +1,7 @@
 export const template =
   '<strong>{Pro_Name}</strong>' +
   "<Center><img src='{Picture}' alt='{Pro_Name}' height='200' width='200'><Center><br />" +
-  '<table class="attrTable">' +
+  '<table class="table is-striped is-narrow">' +
   '<tr valign="top">' +
   '<td class="attrName">Location:</td>' +
   '<td class="attrValue">{Address}</td>' +

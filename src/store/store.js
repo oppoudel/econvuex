@@ -66,7 +66,13 @@ export const store = new Vuex.Store({
   mutations: {
     ADD_FEATURES(state, features) {
       state.econProjects = [...features]
-      state.projectData = [...features]
+      state.projectData = state.econProjects.map(item => {
+        return {
+          name: item.properties.Pro_Name,
+          id: item.id,
+          cost: item.properties.Pro_Cost
+        }
+      })
       state.projectTypes.map(project => {
         state.layers[project] = L.geoJSON(state.econProjects, {
           filter(feature) {
@@ -98,14 +104,28 @@ export const store = new Vuex.Store({
         state.map.removeLayer(state.layers[prop])
       }
       if (value === 'All') {
-        state.projectData = [...state.econProjects]
+        state.projectData = state.econProjects.map(item => {
+          return {
+            name: item.properties.Pro_Name,
+            id: item.id,
+            cost: item.properties.Pro_Cost
+          }
+        })
         for (let prop in state.layers) {
           state.map.addLayer(state.layers[prop])
         }
       } else {
-        state.projectData = state.econProjects.filter(item => {
-          return item.properties.Pro_type === value
-        })
+        state.projectData = state.econProjects
+          .filter(item => {
+            return item.properties.Pro_type === value
+          })
+          .map(item => {
+            return {
+              name: item.properties.Pro_Name,
+              id: item.id,
+              cost: item.properties.Pro_Cost
+            }
+          })
         state.map.addLayer(state.layers[value])
         state.map.fitBounds(state.layers[value].getBounds(), {
           padding: [50, 50]

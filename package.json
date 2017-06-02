@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.16.1",
     "bulma": "^0.4.2",
+    "d3": "^4.9.1",
     "esri-leaflet": "^2.0.8",
     "leaflet": "^1.0.3",
     "vue": "^2.3.3",
