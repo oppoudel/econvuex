@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <app-filter-projects></app-filter-projects>
-    <app-project-stats></app-project-stats>
+    <app-project-stats width="300" height="300"></app-project-stats>
     <app-map></app-map>
   </div>
 </template>
