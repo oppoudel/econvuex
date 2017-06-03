@@ -1,5 +1,6 @@
 <template>
-  <svg width="300" height="300" id="projectStats"> </svg>
+  <div id="projectStats">
+  </div>
 </template>
 <script>
 import { mapGetters } from 'vuex'
@@ -7,7 +8,7 @@ import * as d3 from 'd3'
 export default {
   data() {
     return {
-      margin: { top: 20, right: 20, bottom: 60, left: 60 },
+      margin: { top: 20, right: 20, bottom: 60, left: 90 },
     }
   },
   props: ['width', 'height'],
@@ -15,11 +16,28 @@ export default {
     ...mapGetters({
       projectData: 'getProjectData',
     }),
-    chart() {
-      let chart = d3.select(this.$el)
-        .append("g")
-        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
-      return chart
+    wrap(text, width) {
+      text.each(function () {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          }
+        }
+      });
     }
   },
   mounted() {
@@ -34,6 +52,7 @@ export default {
   },
   methods: {
     drawChart(proData) {
+      d3.select("#SVG_ID").remove();
       const data = [...proData].sort((a, b) => (b.cost - a.cost)).splice(0, 5)
 
       var width = this.width - this.margin.left - this.margin.right,
@@ -42,16 +61,22 @@ export default {
       var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
         y = d3.scaleLinear().rangeRound([height, 0]);
 
-      var g = this.chart
+      var g = d3.select(this.$el)
+        .append("svg")
+        .attr("id", "SVG_ID")
+        .attr("width", this.width)
+        .attr("height", this.height)
+        .append("g")
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
 
 
       x.domain(data.map(function (d) { return d.name; }));
       y.domain([0, d3.max(data, function (d) { return d.cost; })]);
 
-      /*g.append("g")
+      g.append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x))
 
       g.append("g")
         .attr("class", "axis axis--y")
@@ -61,7 +86,7 @@ export default {
         .attr("y", 6)
         .attr("dy", "0.71em")
         .attr("text-anchor", "end")
-        .text("cost");*/
+        .text("cost");
 
       var bars = g.selectAll(".bar")
         .data(data)
