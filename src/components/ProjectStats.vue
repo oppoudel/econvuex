@@ -5,6 +5,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
+import wordwrap from 'd3-jetpack'
 export default {
   data() {
     return {
@@ -15,30 +16,7 @@ export default {
   computed: {
     ...mapGetters({
       projectData: 'getProjectData',
-    }),
-    wrap(text, width) {
-      text.each(function () {
-        var text = d3.select(this),
-          words = text.text().split(/\s+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1.1, // ems
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")),
-          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-          }
-        }
-      });
-    }
+    })
   },
   mounted() {
     if (this.projectData.length > 0) {
@@ -77,6 +55,7 @@ export default {
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x))
+
 
       g.append("g")
         .attr("class", "axis axis--y")

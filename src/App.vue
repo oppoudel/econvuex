@@ -9,7 +9,7 @@
 <script>
 import appMap from './components/Map'
 import appFilterProjects from './components/FilterProjects'
-import appProjectStats from './components/ProjectStats'
+import appProjectStats from './components/ProjectStats1'
 export default {
   name: 'app',
   components: {

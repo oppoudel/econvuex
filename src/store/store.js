@@ -13,7 +13,8 @@ export const store = new Vuex.Store({
     projectData: [],
     icons: {},
     layers: {},
-    projectTypes: []
+    projectTypes: [],
+    loaded: false
   },
   getters: {
     getMap: state => state.map,
@@ -21,7 +22,8 @@ export const store = new Vuex.Store({
     getProjectData: state => state.projectData,
     getIcons: state => state.icons,
     getLayers: state => state.layers,
-    getProjectTypes: state => state.projectTypes
+    getProjectTypes: state => state.projectTypes,
+    getLoaded : state => state.loaded
   },
   actions: {
     loadFeatures({ commit }) {
@@ -73,6 +75,7 @@ export const store = new Vuex.Store({
           cost: item.properties.Pro_Cost
         }
       })
+      state.loaded = true
       state.projectTypes.map(project => {
         state.layers[project] = L.geoJSON(state.econProjects, {
           filter(feature) {
