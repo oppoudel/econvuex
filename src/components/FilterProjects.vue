@@ -31,6 +31,7 @@ export default {
 <style>
 #query {
   position: absolute;
+  width: 330px;
   top: 10px;
   right: 10px;
   z-index: 1000;

@@ -25,5 +25,8 @@ export default {
 </script>
 
 <style>
-
+#app {
+  height: 100vh;
+  width: 100%;
+}
 </style>

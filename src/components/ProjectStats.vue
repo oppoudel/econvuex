@@ -8,37 +8,14 @@ import * as d3 from 'd3'
 export default {
   data() {
     return {
-      margin: { top: 20, right: 20, bottom: 60, left: 90 },
+      margin: { top: 20, right: 10, bottom: 60, left: 40 },
     }
   },
   props: ['width', 'height'],
   computed: {
     ...mapGetters({
       projectData: 'getProjectData',
-    }),
-    wrap(text, width) {
-      text.each(function () {
-        var text = d3.select(this),
-          words = text.text().split(/\s+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1.1, // ems
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")),
-          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-          }
-        }
-      });
-    }
+    })
   },
   mounted() {
     if (this.projectData.length > 0) {
@@ -69,7 +46,6 @@ export default {
         .append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
 
-
       x.domain(data.map(function (d) { return d.name; }));
       y.domain([0, d3.max(data, function (d) { return d.cost; })]);
 
@@ -77,10 +53,12 @@ export default {
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x))
+        .selectAll('text')
+        .call(this.wrap, x.bandwidth())
 
       g.append("g")
         .attr("class", "axis axis--y")
-        .call(d3.axisLeft(y).ticks(10))
+        .call(d3.axisLeft(y).ticks(5, '$').tickFormat(d3.format(".2s")))
         .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
@@ -96,6 +74,29 @@ export default {
         .attr("y", function (d) { return y(d.cost); })
         .attr("width", x.bandwidth())
         .attr("height", function (d) { return height - y(d.cost); })
+    },
+    wrap(text, width) {
+      text.each(function () {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          }
+        }
+      });
     }
   },
 }
@@ -116,7 +117,7 @@ export default {
 }
 
 .bar {
-  fill: steelblue;
+  fill: orangered;
 }
 
 .bar:hover {
