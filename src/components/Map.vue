@@ -15,6 +15,7 @@ export default {
   },
   mounted() {
     this.createMap()
+    this.$store.dispatch('loadFeatures')
   },
   computed: {
     ...mapGetters({

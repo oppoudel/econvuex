@@ -1,14 +1,15 @@
 <template>
-  <div id="projectStats">
+  <div id="projectChart">
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
+import d3Tip from './d3tip'
 export default {
   data() {
     return {
-      margin: { top: 20, right: 10, bottom: 60, left: 40 },
+      margin: { top: 80, right: 25, bottom: 80, left: 35 },
     }
   },
   props: ['width', 'height'],
@@ -29,6 +30,10 @@ export default {
   },
   methods: {
     drawChart(proData) {
+      var tip = d3Tip()
+        .attr('class', 'd3-tip')
+        .html(function (d) { return '<span>' + d.name + '</span>' })
+        .offset([-12, 0])
       d3.select("#SVG_ID").remove();
       const data = [...proData].sort((a, b) => (b.cost - a.cost)).splice(0, 5)
 
@@ -38,13 +43,22 @@ export default {
       var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
         y = d3.scaleLinear().rangeRound([height, 0]);
 
-      var g = d3.select(this.$el)
+      var svg = d3.select(this.$el)
         .append("svg")
         .attr("id", "SVG_ID")
         .attr("width", this.width)
         .attr("height", this.height)
-        .append("g")
+
+      var g = svg.append("g")
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+        .call(tip)
+
+      g.append("text")
+        .attr("class", "title")
+        .attr("x", (this.width / 3))
+        .attr("y", 0 - (this.margin.top / 2))
+        .attr("text-anchor", "middle")
+        .text("Top 5 Projects");
 
       x.domain(data.map(function (d) { return d.name; }));
       y.domain([0, d3.max(data, function (d) { return d.cost; })]);
@@ -74,6 +88,9 @@ export default {
         .attr("y", function (d) { return y(d.cost); })
         .attr("width", x.bandwidth())
         .attr("height", function (d) { return height - y(d.cost); })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
+        .on('click', (d => console.log(this.$store)))
     },
     wrap(text, width) {
       text.each(function () {
@@ -102,12 +119,9 @@ export default {
 }
 </script>
 <style>
-#projectStats {
-  position: absolute;
-  top: 100px;
-  right: 10px;
-  z-index: 1000;
-  background: white;
+#projectChart {
+  box-sizing: border-box;
+  position: relative;
   padding: 1em;
 }
 
@@ -116,8 +130,13 @@ export default {
   height: 300px;
 }
 
+.title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .bar {
-  fill: orangered;
+  fill: goldenrod;
 }
 
 .bar:hover {
@@ -126,6 +145,10 @@ export default {
 
 .axis--x path {
   display: none;
+}
+
+.d3-tip span {
+  color: orangered;
 }
 </style>
 

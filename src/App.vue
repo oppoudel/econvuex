@@ -1,32 +1,51 @@
 <template>
   <div id="app">
-    <app-filter-projects></app-filter-projects>
-    <app-project-stats width="300" height="300"></app-project-stats>
-    <app-map></app-map>
+    <div class="sidebar">
+      <app-filter-projects></app-filter-projects>
+      <hr>
+      <app-project-chart width="400" height="400"></app-project-chart>
+    </div>
+    <div class="column is-10">
+      <app-map></app-map>
+    </div>
   </div>
 </template>
 
 <script>
 import appMap from './components/Map'
 import appFilterProjects from './components/FilterProjects'
-import appProjectStats from './components/ProjectStats'
+import appProjectChart from './components/ProjectChart'
 export default {
   name: 'app',
   components: {
     appMap,
     appFilterProjects,
-    appProjectStats
+    appProjectChart
   },
   created() {
     this.$store.dispatch('loadIconsTypes')
-    this.$store.dispatch('loadFeatures')
   }
 }
 </script>
 
 <style>
 #app {
-  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 90%;
   width: 100%;
+}
+
+.sidebar {
+  width: 400px;
+  background: #f8f8f8;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.column {
+  padding: 0;
 }
 </style>
